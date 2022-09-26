@@ -1,11 +1,11 @@
 package com.example.restservice;
-
+import org.springframework.stereotype.Service;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 //import java.util.List;
-
+@Service
 public class Matcher {
     List<Order> buyList;
     List<Order> sellList;

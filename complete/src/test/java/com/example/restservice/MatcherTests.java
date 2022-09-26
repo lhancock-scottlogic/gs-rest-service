@@ -23,22 +23,22 @@ public class MatcherTests {
     }
 
     /* Methods to write tests for:
-    1. sortPriceHighToLow /
-    2. sortPriceLowToHigh /
-    3. sortDateHighToLow /
-    4. sortDateLowToHigh /
-    5. sortTradeList /
-    6. removeOrder /
-    7. createTrade /
-    8. searchSellList /
-    9. searchBuyList /
-    10. addOrder /
-    11. hasPrice /
-    12. getAggBuys /
-    13. getAggSells /
-    14. aggOrderBook /
-    15. getAllTrades /
-    16. getSpecificUserOrders /
+    1. sortPriceHighToLow
+    2. sortPriceLowToHigh
+    3. sortDateHighToLow
+    4. sortDateLowToHigh
+    5. sortTradeList
+    6. removeOrder
+    7. createTrade
+    8. searchSellList
+    9. searchBuyList
+    10. addOrder
+    11. hasPrice
+    12. getAggBuys
+    13. getAggSells
+    14. aggOrderBook
+    15. getAllTrades
+    16. getSpecificUserOrders
     */
 
     @Test
