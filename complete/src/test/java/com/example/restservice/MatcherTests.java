@@ -22,6 +22,8 @@ public class MatcherTests {
     void tearDown() {
     }
 
+    // ********** UNIT TESTS **********
+
     /* Methods to write tests for:
     1. sortPriceHighToLow
     2. sortPriceLowToHigh
@@ -346,7 +348,4 @@ public class MatcherTests {
         testList.add(testOrder2);
         assertThat(matcher.getSpecificUserOrders("Account_2")).usingRecursiveComparison().isEqualTo(testList);
     }
-
-
-
 }

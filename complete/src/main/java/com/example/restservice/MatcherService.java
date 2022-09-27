@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,14 +15,30 @@ public class MatcherService {
     @Autowired
     private final Matcher matcher = new Matcher(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
+    public List<Order> aggOrderBookAPI(@RequestParam String action, @RequestParam int numOfOrders, @RequestParam double pricePoint) {
+        return matcher.aggOrderBook(action, numOfOrders, pricePoint);
+    }
+
     public List<Trade> getAllTradesAPI() {
-        Trade newTrade = new Trade("buyer", "seller", 50, 50, LocalDateTime.now());
-        matcher.tradeList.add(newTrade);
         return matcher.getAllTrades();
     }
 
-    public List<Order> newOrderAPI(@RequestBody Order order) {
+    public List<ChartOrder> getAggBuysAPI() {
+        return matcher.getAggBuys();
+    }
+
+    public List<ChartOrder> getAggSellsAPI() {
+        return matcher.getAggSells();
+    }
+
+    public List<Order> getSpecificUserOrdersAPI(@RequestParam String username) {
+        return matcher.getSpecificUserOrders(username);
+    }
+
+    public List<Order> addOrderAPI(@RequestBody Order order) {
         matcher.addOrder(order);
         return matcher.getSpecificUserOrders(order.getUsername());
     }
+
+
 }

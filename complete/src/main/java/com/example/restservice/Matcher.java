@@ -18,6 +18,12 @@ public class Matcher {
         this.tradeList = tradeList;
     }
 
+//    public static void main(String[] args) {
+//        Matcher matcher = new Matcher(new ArrayList<Order>(), new ArrayList<Order>(), new ArrayList<Trade>());
+//        matcher.addOrder(new Order(0, "Lucy", 10, 10, "buy", LocalDateTime.now()));
+//        System.out.println(matcher.aggOrderBook("buy", 10, 10));
+//    }
+
     // ********** LIST SORT METHODS **********
     public List<Order> sortPriceHighToLow(List<Order> list) { // highest price is at Array[0]
         list.sort(Comparator.comparing(Order::getPrice).reversed());
@@ -167,13 +173,12 @@ public class Matcher {
         int accumulator = 0;
         ArrayList<ChartOrder> chartBuyList = new ArrayList<>();
         for (Order order : this.buyList) {
-            index = hasPrice(aggBuyList, order.price);
-            if (index == -1) {
+            if (hasPrice(aggBuyList, order.price) == -1) {
                 aggBuyList.add(order);
             }
             else {
                 index = hasPrice(aggBuyList, order.price);
-                aggBuyList.get(index).setQuantity(order.quantity);
+                aggBuyList.get(index).setQuantity(aggBuyList.get(index).getQuantity() + order.quantity);
             }
         }
         sortPriceLowToHigh(aggBuyList);
@@ -181,6 +186,7 @@ public class Matcher {
             chartBuyList.add(new ChartOrder(order.getPrice(), order.getQuantity() + accumulator));
             accumulator = accumulator + order.getQuantity();
         }
+        System.out.println("\n\n\nAGGBUYS: " + aggBuyList);
         return chartBuyList;
     }
 
@@ -196,10 +202,10 @@ public class Matcher {
             }
             else {
                 index = hasPrice(aggSellList, order.price);
-                aggSellList.get(index).setQuantity(order.quantity);
+                aggSellList.get(index).setQuantity(aggSellList.get(index).getQuantity() + order.quantity);
             }
         }
-        sortPriceHighToLow(aggSellList);
+        sortPriceLowToHigh(aggSellList);
         for (Order order : aggSellList) {
             chartSellList.add(new ChartOrder(order.getPrice(), order.getQuantity() + accumulator));
             accumulator = accumulator + order.getQuantity();
@@ -207,20 +213,20 @@ public class Matcher {
         return chartSellList;
     }
 
-    public List<Order> aggOrderBook(String action, int numOfOrders, double pricePoint) throws Exception {
+    public List<Order> aggOrderBook(String action, int numOfOrders, double pricePoint) {
         DecimalFormat df = new DecimalFormat("0.00");
         df.setRoundingMode(RoundingMode.UP);
-        List<Order> list  = new ArrayList<>();
+        List<Order> list;
         ArrayList<Order> aggList = new ArrayList<Order>();
         if (Objects.equals(action, "buy")) {
             list = this.buyList;
         }
-        else if (Objects.equals(action, "sell")) {
+        else {
             list = this.sellList;
         }
-        else {
-            throw new Exception("Error in aggOrderBook call, action is " + action + ", but must be buy or sell");
-        }
+//        else {
+//            throw new Exception("Error in aggOrderBook call, action is " + action + ", but must be buy or sell");
+//        }
         double price;
         for (Order order : list) { // run through order objects in the list (enhanced for)
             if (Math.round(order.getPrice() / pricePoint) == 0) {
@@ -245,6 +251,7 @@ public class Matcher {
         else if (aggList.size() > numOfOrders) {
             return aggList.subList(0, numOfOrders);
         }
+
         return aggList;
     }
 
