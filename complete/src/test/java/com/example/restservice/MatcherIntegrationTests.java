@@ -6,14 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MatcherIntegrationTests {
+
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    Validator validator = factory.getValidator();
+
     @LocalServerPort
     private int port;
 
@@ -27,6 +39,7 @@ public class MatcherIntegrationTests {
     @BeforeEach
     void setUp() {
         controller.matcherService = new MatcherService(); // reset matcher and its contents
+
     }
 
     @Test
@@ -123,5 +136,33 @@ public class MatcherIntegrationTests {
         // it appears in aggregated sells
         assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/api/v1/matcher/getAggSells",
                 String.class)).contains("[{\"price\":1.0,\"quantity\":1}]");
+    }
+
+    //********** NEW ORDER VALIDATION **********
+    @Test
+    @DisplayName("New orders are validated correctly")
+    void ValidateOrdersTest() {
+        List<Order> badOrderList = new ArrayList<>();
+        // No null fields cannot be tested since IDE detects incorrect typing before runtime
+        // userId > 0
+        badOrderList.add(new Order(-1, "Lucy", 1, 1, "buy", LocalDateTime.now()));
+        // username is between 2 and 30 characters
+        badOrderList.add(new Order(0, "L", 1, 1, "buy", LocalDateTime.now()));
+        badOrderList.add(new Order(0, "Lucyyyyyyyyyyyyyyyyyyyyyyyyyyyy", 1, 1, "buy", LocalDateTime.now()));
+        // price is >= £0.01
+        badOrderList.add(new Order(0, "Lucy", 0, 1, "buy", LocalDateTime.now()));
+        badOrderList.add(new Order(0, "Lucy", -1, 1, "buy", LocalDateTime.now()));
+        badOrderList.add(new Order(0, "Lucy", 0.000000001, 1, "buy", LocalDateTime.now()));
+        // quantity is >= 1
+        badOrderList.add(new Order(0, "Lucy", 1, 0, "buy", LocalDateTime.now()));
+        badOrderList.add(new Order(0, "Lucy", 1, -1, "buy", LocalDateTime.now()));
+        // orderDate is in the past
+        badOrderList.add(new Order(0, "Lucy", 1, 1, "buy", LocalDateTime.parse("2100-03-29T13:34:00.000")));
+        // Check each order one by one and assert each one causes a violation
+        for (Order badOrder : badOrderList) {
+            Set<ConstraintViolation<Order>> violations = validator.validate(badOrder);
+            System.out.println(violations);
+            assertFalse(violations.isEmpty());
+        }
     }
 }

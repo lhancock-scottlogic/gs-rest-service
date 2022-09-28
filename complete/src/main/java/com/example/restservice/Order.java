@@ -1,14 +1,30 @@
 package com.example.restservice;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class Order {
     // instance fields
+    @Min(0)
+    @NotNull
     int userId;
+
+    @Size(min=2,max=30)
+    @NotNull
     String username;
+
+    @DecimalMin("0.01")
+    @NotNull
     double price;
+
+    @Min(1)
+    @NotNull
     int quantity;
+
+    @NotNull
     String action;
+
+    @Past
+    @NotNull
     LocalDateTime orderDate;
 
     public Order(int userId, String username, double price, int quantity, String action, LocalDateTime orderDate) {

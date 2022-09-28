@@ -186,7 +186,6 @@ public class Matcher {
             chartBuyList.add(new ChartOrder(order.getPrice(), order.getQuantity() + accumulator));
             accumulator = accumulator + order.getQuantity();
         }
-        System.out.println("\n\n\nAGGBUYS: " + aggBuyList);
         return chartBuyList;
     }
 

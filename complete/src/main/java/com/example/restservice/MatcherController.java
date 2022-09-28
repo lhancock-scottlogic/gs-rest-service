@@ -3,6 +3,8 @@ package com.example.restservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +41,7 @@ public class MatcherController {
     }
 
     @PostMapping(value = "/addOrder", consumes = "application/json", produces = "application/json")
-    public List<Order> addOrderAPI(@RequestBody Order order) {
+    public List<Order> addOrderAPI(@Valid @RequestBody Order order) {
         return matcherService.addOrderAPI(order);
     }
 }
