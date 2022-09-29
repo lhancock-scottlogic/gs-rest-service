@@ -1,18 +1,19 @@
-package com.example.restservice;
+package com.example.restservice.Matcher;
 
+import com.example.restservice.ChartOrder;
+import com.example.restservice.Order;
+import com.example.restservice.Trade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/matcher")
 public class MatcherController {
     @Autowired
+    public
     MatcherService matcherService;
 
     @GetMapping("/getAggOrderBook")

@@ -1,4 +1,5 @@
 package com.example.restservice;
+import com.example.restservice.Matcher.Matcher;
 import org.junit.jupiter.api.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -276,7 +277,7 @@ public class MatcherTests {
         matcher.buyList.add(testOrder3); // add sample orders for processing
 
         assertThat(matcher.getAggBuys().get(0)).usingRecursiveComparison().isEqualTo(new ChartOrder(25, 10));
-        assertThat(matcher.getAggBuys().get(1)).usingRecursiveComparison().isEqualTo(new ChartOrder(50, 20));
+        assertThat(matcher.getAggBuys().get(1)).usingRecursiveComparison().isEqualTo(new ChartOrder(50, 30));
     }
 
     @Test
@@ -290,8 +291,8 @@ public class MatcherTests {
         matcher.sellList.add(testOrder2);
         matcher.sellList.add(testOrder3); // add sample orders for processing
 
-        assertThat(matcher.getAggSells().get(0)).usingRecursiveComparison().isEqualTo(new ChartOrder(50, 10));
-        assertThat(matcher.getAggSells().get(1)).usingRecursiveComparison().isEqualTo(new ChartOrder(25, 20));
+        assertThat(matcher.getAggSells().get(0)).usingRecursiveComparison().isEqualTo(new ChartOrder(25, 10));
+        assertThat(matcher.getAggSells().get(1)).usingRecursiveComparison().isEqualTo(new ChartOrder(50, 30));
     }
 
     @Test

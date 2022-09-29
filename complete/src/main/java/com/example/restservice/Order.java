@@ -36,6 +36,10 @@ public class Order {
         this.orderDate = orderDate;
     }
 
+    public Order(Order order) { // second constructor to allow cloning/deep copies
+        this(order.getUserId(), order.getUsername(), order.getPrice(), order.getQuantity(), order.getAction(), order.getOrderDate());
+    }
+
     public int getUserId() {
         return userId;
     }
@@ -81,5 +85,11 @@ public class Order {
     }
     public LocalDateTime getOrderDate() {
         return orderDate;
+    }
+
+    @Override
+    public String toString() {
+        String orderString = "\nOrder string:\nuserId: " + this.userId + "\nusername: " + this.username + "\nprice: " + this.price + "\nquantity: " + this.quantity + "\naction: " + this.action + "\ndate: " + this.orderDate;
+        return orderString;
     }
 }

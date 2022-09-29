@@ -1,4 +1,7 @@
-package com.example.restservice;
+package com.example.restservice.Matcher;
+import com.example.restservice.ChartOrder;
+import com.example.restservice.Order;
+import com.example.restservice.Trade;
 import org.springframework.stereotype.Service;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -7,9 +10,9 @@ import java.util.*;
 //import java.util.List;
 @Service
 public class Matcher {
-    List<Order> buyList;
-    List<Order> sellList;
-    List<Trade> tradeList;
+    public List<Order> buyList;
+    public List<Order> sellList;
+    public List<Trade> tradeList;
 
     // ********** Constructor **********
     public Matcher(ArrayList<Order> buyList, ArrayList<Order> sellList, ArrayList<Trade> tradeList) {
@@ -76,7 +79,7 @@ public class Matcher {
 
     // AddOrder: Takes a new order and returns a list of any trades made (result of searchBuyList/searchSellList)
     public ArrayList<Trade> addOrder(Order newOrder) {
-        switch(newOrder.action) {
+        switch(newOrder.getAction()) {
             case "buy":
                 this.buyList.add(newOrder);
                 this.buyList = sortDateLowToHigh(this.buyList); // sort by earliest added, then by highest price
@@ -88,7 +91,7 @@ public class Matcher {
                 this.sellList = sortPriceHighToLow(this.sellList);
                 return searchBuyList(newOrder); // then return result of searchBuyList
             default:
-                System.out.println("Error: action is " + newOrder.action + ", but must be buy or sell.");
+                System.out.println("Error: action is " + newOrder.getAction() + ", but must be buy or sell.");
                 return new ArrayList<>(); // return empty ArrayList if there's an error to prevent frontend collapsing
         }
     }
@@ -139,7 +142,7 @@ public class Matcher {
                         i = -1;
                     }
                     else if (newOrder.getQuantity() > this.buyList.get(i).getQuantity()) {
-                        newOrder.setQuantity(newOrder.quantity - this.buyList.get(i).getQuantity()); // quantity reduced due to partial trade
+                        newOrder.setQuantity(newOrder.getQuantity() - this.buyList.get(i).getQuantity()); // quantity reduced due to partial trade
                         Trade newTrade = createTrade(this.buyList.get(i).getUsername(), newOrder.getUsername(), this.buyList.get(i).getPrice(), this.buyList.get(i).getQuantity(), newOrder.getOrderDate());
                         this.removeOrder(this.buyList.get(i)); // quantity depleted, so it gets deleted
                         currentTradeList.add(newTrade);
@@ -173,20 +176,21 @@ public class Matcher {
         int accumulator = 0;
         ArrayList<ChartOrder> chartBuyList = new ArrayList<>();
         for (Order order : this.buyList) {
-            if (hasPrice(aggBuyList, order.price) == -1) {
-                aggBuyList.add(order);
+            if (hasPrice(aggBuyList, order.getPrice()) == -1) {
+                aggBuyList.add(new Order(order)); // object is cloned as a DEEP copy using 2nd Order constructor
             }
             else {
-                index = hasPrice(aggBuyList, order.price);
-                aggBuyList.get(index).setQuantity(aggBuyList.get(index).getQuantity() + order.quantity);
+                index = hasPrice(aggBuyList, order.getPrice());
+                aggBuyList.get(index).setQuantity(aggBuyList.get(index).getQuantity() + order.getQuantity());
             }
         }
         sortPriceLowToHigh(aggBuyList);
         for (Order order : aggBuyList) {
             chartBuyList.add(new ChartOrder(order.getPrice(), order.getQuantity() + accumulator));
             accumulator = accumulator + order.getQuantity();
+
         }
-        return chartBuyList;
+        return chartBuyList; // todo: objects are not cloned properly, must clone current buyList order before adding to aggBuyList
     }
 
     public ArrayList<ChartOrder> getAggSells() {
@@ -195,13 +199,13 @@ public class Matcher {
         int accumulator = 0;
         ArrayList<ChartOrder> chartSellList = new ArrayList<>();
         for (Order order : this.sellList) {
-            index = hasPrice(aggSellList, order.price);
+            index = hasPrice(aggSellList, order.getPrice());
             if (index == -1) {
-                aggSellList.add(order);
+                aggSellList.add(new Order(order));
             }
             else {
-                index = hasPrice(aggSellList, order.price);
-                aggSellList.get(index).setQuantity(aggSellList.get(index).getQuantity() + order.quantity);
+                index = hasPrice(aggSellList, order.getPrice());
+                aggSellList.get(index).setQuantity(aggSellList.get(index).getQuantity() + order.getQuantity());
             }
         }
         sortPriceLowToHigh(aggSellList);
