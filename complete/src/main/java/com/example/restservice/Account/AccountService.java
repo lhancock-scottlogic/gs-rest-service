@@ -6,7 +6,6 @@ import io.jsonwebtoken.impl.TextCodec;
 import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.*;
-
 import javax.crypto.spec.SecretKeySpec;
 import io.jsonwebtoken.*;
 import java.util.Date;
@@ -15,6 +14,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.xml.bind.DatatypeConverter;
 import javax.crypto.spec.SecretKeySpec;
+import java.sql.*;
 
 @Service
 public class AccountService {
@@ -26,37 +26,35 @@ public class AccountService {
         this.accountList.add(new Account(2, "Coco", "password222"));
     }
 
-    public String createAccount(String username,String password) {
-        return null;
+    public String createAccount(String username,String password) throws SQLException {
+        Connection conn = connectToDatabase();
+        if (!usernameExists(username)) {
+            this.accountList.add(new Account(0, username, password));
+            closeConnection(conn);
+            return "Account created successfully";
+        }
+        closeConnection(conn);
+        return "Username already taken";
     }
-    public String login(String username, String password) {
-        Date today = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(today);
-        calendar.add(Calendar.DATE, 1);
-        Date tomorrow = calendar.getTime(); // setting today ad tomorrow variables for the issue/expiration dates of the token
 
+    public String login(String username, String password) throws SQLException {
+        Connection conn = connectToDatabase();
         if (isValidLogin(username, password)) {
-//            String jws = Jwts.builder()
-//                    .setIssuer("Matcher")
-//                    .setSubject("msilverman")
-//                    .claim("name", "Micah Silverman")
-//                    .claim("scope", "admins")
-//                    // Fri Jun 24 2016 15:33:42 GMT-0400 (EDT)
-//                    .setIssuedAt(today)
-//                    // Sat Jun 24 2116 15:33:42 GMT-0400 (EDT)
-//                    .setExpiration(tomorrow)
-//                    .signWith(
-//                            SignatureAlgorithm.HS256,
-//                            TextCodec.BASE64.decode("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=")
-//                    )
-//                    .compact();
-           String jws = generateToken(username, username, password);
-           return jws; // return token
+            closeConnection(conn);
+           return generateToken(username, username, password);// return token
         }
         else {
+            closeConnection(conn);
             return "Not authenticated"; // return "not authenticated" message
         }
+    }
+
+    public Connection connectToDatabase() throws SQLException {
+        return DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+    }
+
+    public void closeConnection(Connection conn) throws SQLException {
+        conn.close();
     }
 
     public boolean isValidLogin(String username, String password) {
@@ -72,6 +70,15 @@ public class AccountService {
             }
         }
         System.out.println("Username and password do not match");
+        return false;
+    }
+
+    public boolean usernameExists(String username) {
+        for(Account account : this.accountList) {
+            if (account.getUsername().equals(username)) {
+                return true;
+            }
+        }
         return false;
     }
 

@@ -23,6 +23,8 @@ dependencies {
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'javax.xml.bind:jaxb-api:2.1'
+	//implementation 'org.h2.Driver'
+	implementation 'com.h2database:h2:2.1.214'
 }
 
 test {
