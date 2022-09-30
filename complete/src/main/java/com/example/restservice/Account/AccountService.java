@@ -1,8 +1,11 @@
 package com.example.restservice.Account;
 import com.example.restservice.Order;
+import com.example.restservice.model.AccountModel;
+import com.example.restservice.repository.AccountRepository;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.*;
@@ -18,48 +21,41 @@ import java.sql.*;
 
 @Service
 public class AccountService {
-    public List<Account> accountList;
-    public AccountService(ArrayList<Account> accountList) {
-        this.accountList = accountList;
-        this.accountList.add(new Account(0, "Lucy", "password000"));
-        this.accountList.add(new Account(1, "Luke", "password111"));
-        this.accountList.add(new Account(2, "Coco", "password222"));
+    @Autowired
+    AccountRepository accountRepository;
+    public AccountService () {
     }
 
+    // ********** REPOSITORY METHODS **********
+    public void saveOrUpdate(AccountModel account) {
+        accountRepository.save(account);
+    }
+
+    public List<AccountModel> findAll() {
+        return (List<AccountModel>) accountRepository.findAll();
+    }
+
+    // ********** Methods called by AccountController **********
     public String createAccount(String username,String password) throws SQLException {
-        Connection conn = connectToDatabase();
         if (!usernameExists(username)) {
-            this.accountList.add(new Account(0, username, password));
-            closeConnection(conn);
+            saveOrUpdate(new AccountModel(username, password));
             return "Account created successfully";
         }
-        closeConnection(conn);
         return "Username already taken";
     }
 
     public String login(String username, String password) throws SQLException {
-        Connection conn = connectToDatabase();
         if (isValidLogin(username, password)) {
-            closeConnection(conn);
            return generateToken(username, username, password);// return token
         }
         else {
-            closeConnection(conn);
             return "Not authenticated"; // return "not authenticated" message
         }
     }
 
-    public Connection connectToDatabase() throws SQLException {
-        return DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
-    }
-
-    public void closeConnection(Connection conn) throws SQLException {
-        conn.close();
-    }
-
     public boolean isValidLogin(String username, String password) {
-        for (Account account : this.accountList) {
-            System.out.println("\n" + account);
+        List<AccountModel> accountList = findAll();
+        for (AccountModel account : accountList) {
             if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
                 System.out.println("Username and password match");
                 return true;
@@ -74,7 +70,8 @@ public class AccountService {
     }
 
     public boolean usernameExists(String username) {
-        for(Account account : this.accountList) {
+        List<AccountModel> accountList = findAll();
+        for(AccountModel account : accountList) {
             if (account.getUsername().equals(username)) {
                 return true;
             }
@@ -82,7 +79,7 @@ public class AccountService {
         return false;
     }
 
-    public String generateToken(String subject, String username, String password) {
+    public String generateToken(String subject, String username, String password) { // generate JWT token for returning on successful login
         return Jwts.builder().setSubject(username).claim("username", username).claim("password", password).signWith(
                 SignatureAlgorithm.HS256,
                 TextCodec.BASE64.decode("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=")

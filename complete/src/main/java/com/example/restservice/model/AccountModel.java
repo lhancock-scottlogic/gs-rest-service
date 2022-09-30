@@ -1,22 +1,29 @@
-package com.example.restservice.Account;
-import org.springframework.data.annotation.Id;
+package com.example.restservice.model;
 
-public class Account {
-    int userId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+import javax.persistence.*;
+
+
+@Entity
+@Table(name = "ACCOUNTS")
+public class AccountModel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
     String username;
     String password;
-    public Account(int userId, String username, String password) {
-        this.userId = userId;
+
+    public AccountModel(String username, String password) {
         this.username = username;
         this.password = password;
     }
-
-    public int getUserId() {
-        return userId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getUsername() {
