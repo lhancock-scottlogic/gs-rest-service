@@ -4,6 +4,7 @@ import com.example.restservice.ChartOrder;
 import com.example.restservice.Order;
 import com.example.restservice.Trade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/matcher")
+//@PreAuthorize("permitAll()")
 public class MatcherController {
     @Autowired
     public
@@ -36,11 +38,13 @@ public class MatcherController {
         return matcherService.getAggSellsAPI();
     }
 
+    //@PreAuthorize("isAuthenticated()")
     @GetMapping("/getSpecificUserOrders")
     public List<Order> getSpecificUserOrdersAPI(@RequestParam(value = "username", defaultValue = "Lucy") String username) {
         return matcherService.getSpecificUserOrdersAPI(username);
     }
 
+    //@PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/addOrder", consumes = "application/json", produces = "application/json")
     public List<Order> addOrderAPI(@Valid @RequestBody Order order) {
         return matcherService.addOrderAPI(order);

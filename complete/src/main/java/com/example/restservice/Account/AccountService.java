@@ -6,6 +6,12 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.*;
@@ -20,7 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.sql.*;
 
 @Service
-public class AccountService {
+public class AccountService implements UserDetailsService {
     @Autowired
     AccountRepository accountRepository;
     public AccountService () {
@@ -30,6 +36,17 @@ public class AccountService {
     public void saveOrUpdate(AccountModel account) {
         accountRepository.save(account);
     }
+    // Test method from tutorial
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        if (usernameExists(username)) {
+            return new User(username, generateToken(username, username), new ArrayList<>());// return new User object with token
+        }
+        else {
+            throw new UsernameNotFoundException("User with username " + username + "not found.");
+        }
+    }
+
 
     public List<AccountModel> findAll() {
         return (List<AccountModel>) accountRepository.findAll();
@@ -44,14 +61,16 @@ public class AccountService {
         return "Username already taken";
     }
 
-    public String login(String username, String password) throws SQLException {
+    public ResponseEntity<String> login(String username, String password) throws SQLException {
         if (isValidLogin(username, password)) {
-           return generateToken(username, username, password);// return token
+           return new ResponseEntity<>(generateToken(username, username), HttpStatus.OK);// return token
         }
         else {
-            return "Not authenticated"; // return "not authenticated" message
+            return new ResponseEntity<>("Not authenticated", HttpStatus.BAD_REQUEST); // return "not authenticated" message
         }
     }
+
+
 
     public boolean isValidLogin(String username, String password) {
         List<AccountModel> accountList = findAll();
@@ -79,10 +98,10 @@ public class AccountService {
         return false;
     }
 
-    public String generateToken(String subject, String username, String password) { // generate JWT token for returning on successful login
-        return Jwts.builder().setSubject(username).claim("username", username).claim("password", password).signWith(
+    public String generateToken(String subject, String username) { // generate JWT token for returning on successful login
+        return Jwts.builder().setSubject(username).claim("username", username).signWith(
                 SignatureAlgorithm.HS256,
-                TextCodec.BASE64.decode("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=")
+                "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()
         ).compact();
     }
 }

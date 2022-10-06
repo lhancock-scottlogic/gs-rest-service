@@ -110,7 +110,7 @@ public class MatcherTests {
 
     @Test
     @DisplayName("sortTradeList")
-    void SortTradeListTest() { // TODO: refactor to use Trades
+    void SortTradeListTest() {
         ArrayList<Trade> testList = new ArrayList<>();
         Trade testTrade1 = new Trade("Buyer", "Seller", 99.99, 150, LocalDateTime.of(2019, 3, 28, 14, 33));
         Trade testTrade2 = new Trade("Buyer", "Seller", 189.99, 22, LocalDateTime.of(2019, 3, 28, 14, 34));

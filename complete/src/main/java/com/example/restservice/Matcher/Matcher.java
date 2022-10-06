@@ -190,7 +190,7 @@ public class Matcher {
             accumulator = accumulator + order.getQuantity();
 
         }
-        return chartBuyList; // todo: objects are not cloned properly, must clone current buyList order before adding to aggBuyList
+        return chartBuyList;
     }
 
     public ArrayList<ChartOrder> getAggSells() {
