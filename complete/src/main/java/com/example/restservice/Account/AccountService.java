@@ -45,7 +45,7 @@ public class AccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         if (usernameExists(username)) {
-            return new User(username, generateToken(username, username), new ArrayList<>());// return new User object with token
+            return new User(username, generateToken(username, username, getIdFromUserLogin(username)), new ArrayList<>());// return new User object with token
         }
         else {
             throw new UsernameNotFoundException("User with username " + username + "not found.");
@@ -69,7 +69,7 @@ public class AccountService implements UserDetailsService {
     public ResponseEntity<String> login(String username, String password) throws SQLException {
         if (isValidLogin(username, password)) {
             //auth = SecurityContextHolder.getContext().getAuthentication(); // uncomment if auth stops working
-           return new ResponseEntity<>(generateToken(username, username), HttpStatus.OK);// return token
+            return new ResponseEntity<>(generateToken(username, username, getIdFromUserLogin(username)), HttpStatus.OK);// return token
         }
         else {
             return new ResponseEntity<>("Not authenticated", HttpStatus.BAD_REQUEST); // return "not authenticated" message
@@ -114,8 +114,8 @@ public class AccountService implements UserDetailsService {
         return false;
     }
 
-    public String generateToken(String subject, String username) { // generate JWT token for returning on successful login
-        return Jwts.builder().setSubject(username).claim("username", username).signWith(
+    public String generateToken(String subject, String username, int id) { // generate JWT token for returning on successful login
+        return Jwts.builder().setSubject(username).claim("username", username).claim("id", id).signWith(
                 SignatureAlgorithm.HS256,
                 "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()
         ).compact();

@@ -21,7 +21,7 @@ public class MatcherService {
     private final Matcher matcher = new Matcher(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
     @Autowired
-    AccountRepository accountRepository;
+    AccountRepository accountRepository; // possibly a bad idea to use accountRepository here
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -42,15 +42,25 @@ public class MatcherService {
     }
 
     public List<Order> getSpecificUserOrdersAPI(@RequestParam String username) {
-        return matcher.getSpecificUserOrders(username);
+        String actual_username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return matcher.getSpecificUserOrders(actual_username);
     }
 
-    public List<Order> addOrderAPI(@RequestBody Order order) { // todo: infer userId from their record too
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<Order> addOrderAPI(@RequestBody Order order) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal(); // infer username from currently authenticated user
         order.setUsername(username);
+        order.setUserId(getIdFromUserLogin(username)); // infer account ID from DB query using username (ID not given in SecurityContextHolder)
         matcher.addOrder(order);
         return matcher.getSpecificUserOrders(order.getUsername());
     }
 
-
+    public int getIdFromUserLogin(String username) { // possibly a bad idea to use accountRepository here
+        List<AccountModel> accountList = (List<AccountModel>) accountRepository.findAll();
+        for (AccountModel account : accountList) {
+            if (account.getUsername().equals(username)) {
+                return account.getId();
+            }
+        }
+        return -1;
+    }
 }
