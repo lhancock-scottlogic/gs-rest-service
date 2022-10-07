@@ -1,5 +1,6 @@
 package com.example.restservice.Matcher;
 
+import com.example.restservice.Account.AccountService;
 import com.example.restservice.ChartOrder;
 import com.example.restservice.Order;
 import com.example.restservice.Trade;
@@ -12,11 +13,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/matcher")
-//@PreAuthorize("permitAll()")
 public class MatcherController {
     @Autowired
-    public
-    MatcherService matcherService;
+    public MatcherService matcherService;
+
+    @Autowired
+    public AccountService accountService;
 
     @GetMapping("/getAggOrderBook")
     public List<Order> aggOrderBookAPI(@RequestParam (value = "action") String action, @RequestParam (value = "numOfOrders") int numOfOrders, @RequestParam (value = "pricePoint") double pricePoint) {
@@ -38,13 +40,11 @@ public class MatcherController {
         return matcherService.getAggSellsAPI();
     }
 
-    //@PreAuthorize("isAuthenticated()")
     @GetMapping("/getSpecificUserOrders")
     public List<Order> getSpecificUserOrdersAPI(@RequestParam(value = "username", defaultValue = "Lucy") String username) {
         return matcherService.getSpecificUserOrdersAPI(username);
     }
 
-    //@PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/addOrder", consumes = "application/json", produces = "application/json")
     public List<Order> addOrderAPI(@Valid @RequestBody Order order) {
         return matcherService.addOrderAPI(order);

@@ -8,6 +8,8 @@ import io.jsonwebtoken.impl.TextCodec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,6 +31,9 @@ import java.sql.*;
 public class AccountService implements UserDetailsService {
     @Autowired
     AccountRepository accountRepository;
+
+
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     public AccountService () {
     }
 
@@ -63,6 +68,7 @@ public class AccountService implements UserDetailsService {
 
     public ResponseEntity<String> login(String username, String password) throws SQLException {
         if (isValidLogin(username, password)) {
+            //auth = SecurityContextHolder.getContext().getAuthentication(); // uncomment if auth stops working
            return new ResponseEntity<>(generateToken(username, username), HttpStatus.OK);// return token
         }
         else {
@@ -86,6 +92,16 @@ public class AccountService implements UserDetailsService {
         }
         System.out.println("Username and password do not match");
         return false;
+    }
+
+    public int getIdFromUserLogin(String username) {
+        List<AccountModel> accountList = findAll();
+        for (AccountModel account : accountList) {
+            if (account.getUsername().equals(username)) {
+                return account.getId();
+            }
+        }
+        return -1;
     }
 
     public boolean usernameExists(String username) {

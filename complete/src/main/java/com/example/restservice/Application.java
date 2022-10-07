@@ -10,15 +10,5 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-//        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-//        Object dataSource = context.getBean("dataSource");
-//        System.out.println(dataSource);
     }
-
-//    @Bean
-//    CommandLineRunner commandLineRunner(AccountRepository repository, String username, String password) {
-//        return args -> {
-//            //repository.save(new Account(username, password));
-//        };
-//    }
 }
