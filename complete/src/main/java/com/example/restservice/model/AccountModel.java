@@ -1,7 +1,6 @@
 package com.example.restservice.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import javax.persistence.Id;
 import javax.persistence.*;
 
 
@@ -14,10 +13,14 @@ public class AccountModel {
     String username;
     String password;
 
+    public AccountModel() {
+    }
+
     public AccountModel(String username, String password) {
         this.username = username;
         this.password = password;
     }
+
     public Integer getId() {
         return id;
     }

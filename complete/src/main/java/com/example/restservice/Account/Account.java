@@ -2,21 +2,21 @@ package com.example.restservice.Account;
 import org.springframework.data.annotation.Id;
 
 public class Account {
-    int userId;
+    int accountId;
     String username;
     String password;
-    public Account(int userId, String username, String password) {
-        this.userId = userId;
+    public Account(int accountId, String username, String password) {
+        this.accountId = accountId;
         this.username = username;
         this.password = password;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getaccountId() {
+        return accountId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setaccountId(int accountId) {
+        this.accountId = accountId;
     }
 
     public String getUsername() {

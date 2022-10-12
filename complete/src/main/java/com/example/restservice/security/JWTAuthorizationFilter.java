@@ -68,9 +68,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     }
     private boolean checkJWTToken(HttpServletRequest request, HttpServletResponse res) {
         String authenticationHeader = request.getHeader(HEADER);
-        System.out.println(request.getHeader(HEADER));
         if (authenticationHeader == null || !authenticationHeader.startsWith(PREFIX)) {
-            System.out.println("\nauthenticationHeader = " + authenticationHeader);
             return false;
         }
         return true;

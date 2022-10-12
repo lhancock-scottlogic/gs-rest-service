@@ -1,10 +1,7 @@
 package com.example.restservice.Account;
-import com.example.restservice.Order;
 import com.example.restservice.model.AccountModel;
 import com.example.restservice.repository.AccountRepository;
-import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.TextCodec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import java.security.Key;
+
 import java.util.*;
-import javax.crypto.spec.SecretKeySpec;
-import io.jsonwebtoken.*;
-import java.util.Date;
+
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import jakarta.xml.bind.DatatypeConverter;
-import javax.crypto.spec.SecretKeySpec;
+
 import java.sql.*;
 
 @Service
@@ -96,6 +88,7 @@ public class AccountService implements UserDetailsService {
 
     public int getIdFromUserLogin(String username) {
         List<AccountModel> accountList = findAll();
+        //return accountList.stream().filter(account -> account.getUsername().equals(username)).findAny();
         for (AccountModel account : accountList) {
             if (account.getUsername().equals(username)) {
                 return account.getId();

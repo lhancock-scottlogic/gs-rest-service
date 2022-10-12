@@ -24,7 +24,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        http.authorizeRequests().anyRequest().permitAll();
-//        http.headers().frameOptions().disable();
+            http.headers().frameOptions().disable();
 //        http.csrf().disable();
 //        return http.build();
             http.csrf().disable()
@@ -33,8 +33,9 @@ public class SecurityConfig {
                 .antMatchers("/api/v1/matcher/login").permitAll()
                 //.antMatchers("/api/v1/matcher/authenticate").permitAll()
                 .antMatchers("/api/v1/matcher/createAccount").permitAll()
+                .antMatchers("/h2-console/").permitAll()
                 // all other requests need to be authenticated
-                .anyRequest().authenticated();
+                .anyRequest().permitAll();
             return http.build();
     }
 
