@@ -31,12 +31,6 @@ public class Matcher {
         this.tradeList = tradeList;
     }
 
-//    public static void main(String[] args) {
-//        Matcher matcher = new Matcher(new ArrayList<Order>(), new ArrayList<Order>(), new ArrayList<Trade>());
-//        matcher.addOrder(new Order(0, "Lucy", 10, 10, "buy", LocalDateTime.now()));
-//        System.out.println(matcher.aggOrderBook("buy", 10, 10));
-//    }
-
     // ********** LIST SORT METHODS **********
     public List<UserOrder> sortPriceHighToLow(List<UserOrder> list) { // highest price is at Array[0]
         list.sort(Comparator.comparing(UserOrder::getPrice).reversed());
@@ -63,8 +57,6 @@ public class Matcher {
         if (Objects.equals(orderToRemove.getOrderAction(), "buy")) {
             if (buyList.contains(orderToRemove)) {
                 buyList.remove(orderToRemove);
-                //System.out.println(this.getMatchingOrderFromDatabase(orderToRemove));
-                //orderRepository.deleteById(this.getMatchingOrderFromDatabase(orderToRemove).getId()); // todo: try deleting by username
                 orderRepository.deleteById(orderToRemove.getId());
                 return 1;
             }
@@ -72,8 +64,6 @@ public class Matcher {
         if (Objects.equals(orderToRemove.getOrderAction(), "sell")) {
             if (sellList.contains(orderToRemove)) {
                 sellList.remove(orderToRemove);
-                //System.out.println(this.getMatchingOrderFromDatabase(orderToRemove));
-                //orderRepository.deleteById(this.getMatchingOrderFromDatabase(orderToRemove).getId());
                 orderRepository.deleteById(orderToRemove.getId());
                 return 1;
             }
